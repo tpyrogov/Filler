@@ -12,6 +12,23 @@
 
 #include "./includes/get_next_line.h"
 
+void	del_file(t_line **files, t_line *cur)
+{
+	t_line *next;
+
+	next = *files;
+	while (next)
+	{
+		if (next->next->fd == cur->fd)
+		{
+			ft_strdel(&cur->str);
+			next->next = cur->next;
+			free(cur);
+		}
+		next = next->next;
+	}
+}
+
 t_line	*new_fd(int fd)
 {
 	t_line *new;
@@ -20,6 +37,8 @@ t_line	*new_fd(int fd)
 	new->fd = fd;
 	new->next = NULL;
 	new->str = ft_strnew(BUFF_SIZE);
+	new->w = ft_strnew(BUFF_SIZE);
+	new->save = ft_strnew(BUFF_SIZE);
 	return (new);
 }
 
@@ -44,28 +63,26 @@ int		read_line(t_line **cur, char **line)
 {
 	int		rd;
 	char	buff[BUFF_SIZE + 1];
-	char	*save;
-	char	*w;
 
-	w = ft_strdup((*cur)->str);
-	while (!(ft_strchr(w, '\n'))
+	(*cur)->w = ft_strdup((*cur)->str);
+	while (!(ft_strchr((*cur)->w, '\n'))
 		&& (rd = read((*cur)->fd, buff, BUFF_SIZE)))
 	{
 		buff[rd] = '\0';
-		save = ft_strdup(w);
-		free(w);
-		if (rd == -1 || !(w = ft_strjoin(save, buff)))
+		(*cur)->save = ft_strdup((*cur)->w);
+//		free((*cur)->w);
+		if (rd == -1 || !((*cur)->w = ft_strjoin((*cur)->save, buff)))
 			return (-1);
-		free(save);
+		ft_strdel(&(*cur)->save);
 	}
-	if (rd < BUFF_SIZE && !ft_strlen(w))
+	if (rd < BUFF_SIZE && !ft_strlen((*cur)->w))
 	{
-		free(w);
+		ft_strdel(&(*cur)->w);
 		return (0);
 	}
-	(rd = ft_writetil(line, w, '\n')) < (int)ft_strlen(w) ?
-	(*cur)->str = ft_strcpy((*cur)->str, w + rd + 1) : ft_strclr((*cur)->str);
-	free(w);
+	(rd = ft_writetil(line, (*cur)->w, '\n')) < (int)ft_strlen((*cur)->w) ?
+	(*cur)->str = ft_strcpy((*cur)->str, (*cur)->w + rd + 1) : ft_strclr((*cur)->str);
+	ft_strdel(&(*cur)->w);
 	return (1);
 }
 
@@ -82,7 +99,10 @@ int		get_next_line(const int fd, char **line)
 		if (end == -1)
 			return (-1);
 		else if (end == 0)
+		{
+//			del_file(&files, cur);
 			return (0);
+		}
 	}
 	else
 		return (-1);

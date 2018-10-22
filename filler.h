@@ -22,6 +22,8 @@ typedef struct		s_data
 	unsigned char	me;
 	int				ans_x;
 	int				ans_y;
+	int 			init;
+	char			*read;
 
 }					t_data;
 

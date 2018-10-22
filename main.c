@@ -19,9 +19,9 @@ int 	check_condiotions(t_data *game, int i, int j, int *first)
 	}
 	else if (game->piece[i][j] == '*' && game->map[game->temp_y + i][game->temp_x + j] == game->enemy)
 		return (-1);
-	if ((game->piece[i][j] == '.' && game->map[game->temp_y + i][game->temp_x + j] == game->me)
-	|| (game->piece[i][j] == '*' && game->map[game->temp_y + i][game->temp_x + j] == game->me))
-		return (0);
+//	if ((game->piece[i][j] == '.' && game->map[game->temp_y + i][game->temp_x + j] == game->me)
+//	|| (game->piece[i][j] == '*' && game->map[game->temp_y + i][game->temp_x + j] == game->me))
+//		return (0);
 	return (game->map[game->temp_y + i][game->temp_x + j]);
 }
 
@@ -113,14 +113,12 @@ int		main()
 //	fd = fopen("/Users/tpyrogov/CLionProjects/filler2/cmake-build-debug/file", "wr");
 	cont = 1;
 	start_init(&game);
-	init_players(&game);
 	while (cont != -1)
 	{
 		if (init(&game) == -1)
 			break;
 		else
 		{
-			distance_map(&game);
 //			i = 0;
 //			fprintf(fd, "\n");
 //			while (i < game.m_h)
@@ -135,6 +133,7 @@ int		main()
 //				i++;
 //			}
 			cont = solve(&game);
+			if (cont != -1)
 			del_before_update(&game);
 		}
 	}

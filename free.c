@@ -4,32 +4,39 @@
 
 #include "filler.h"
 
-void	free_mass(unsigned char **mass, int max)
+void	free_map(t_data *game)
 {
 	int i;
 
 	i = 0;
-	while (i < max)
+	while (i < game->m_h)
 	{
-		free(mass[i]);
+		free(game->map[i]);
 		i++;
 	}
-	free(mass);
+	free(game->map);
+	game->map = NULL;
 }
 
-void	free_data(t_data *game)
+void	free_piece(t_data *game)
 {
-	if (game->map != NULL)
-		free_mass(game->map, game->m_h);
-	game->map = NULL;
-	if (game->piece != NULL)
-		free_mass(game->piece, game->p_h);
+	int i;
+
+	i = 0;
+	while (i < game->p_h)
+	{
+		free(game->piece[i]);
+		i++;
+	}
+	free(game->piece);
 	game->piece = NULL;
 }
 
+
 void	del_before_update(t_data *game)
 {
-	free_data(game);
+	free_map(game);
+	free_piece(game);
 	game->sum = 0;
 	game->ans_x = -1;
 	game->ans_y = -1;

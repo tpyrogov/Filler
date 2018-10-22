@@ -12,13 +12,15 @@
 
 #ifndef GET_NEXT_LINE_GET_NEXT_LINE_H
 # define GET_NEXT_LINE_GET_NEXT_LINE_H
-# define BUFF_SIZE 10000
+# define BUFF_SIZE 100
 
 # include "libft.h"
 
 typedef struct		s_line{
 	int				fd;
 	char			*str;
+	char			*w;
+	char 			*save;
 	struct s_line	*next;
 }					t_line;
 
