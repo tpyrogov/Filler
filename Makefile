@@ -21,7 +21,6 @@ $(OBJ):%.o: %.c
 clean:
 	rm -f *.o
 	make -C libft/ clean
-	# rm -f ./libft/*.o
 
 fclean: clean
 	rm -f $(NAME)
