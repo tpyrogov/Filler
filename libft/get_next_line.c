@@ -10,24 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "./includes/get_next_line.h"
-
-void	del_file(t_line **files, t_line *cur)
-{
-	t_line *next;
-
-	next = *files;
-	while (next)
-	{
-		if (next->next->fd == cur->fd)
-		{
-			ft_strdel(&cur->str);
-			next->next = cur->next;
-			free(cur);
-		}
-		next = next->next;
-	}
-}
+#include "includes/libft.h"
 
 t_line	*new_fd(int fd)
 {
@@ -35,10 +18,9 @@ t_line	*new_fd(int fd)
 
 	new = (t_line *)malloc(sizeof(t_line));
 	new->fd = fd;
+	new->rd = 0;
 	new->next = NULL;
-	new->str = ft_strnew(BUFF_SIZE);
-	new->w = ft_strnew(BUFF_SIZE);
-	new->save = ft_strnew(BUFF_SIZE);
+	new->str = NULL;
 	return (new);
 }
 
@@ -59,53 +41,80 @@ t_line	*get_file(t_line **files, int fd)
 	return (cur);
 }
 
-int		read_line(t_line **cur, char **line)
+int		cut_line(char **line, t_line **cur, char *pos)
 {
-	int		rd;
-	char	buff[BUFF_SIZE + 1];
+	size_t	size;
+	char	*buff;
 
-	(*cur)->w = ft_strdup((*cur)->str);
-	while (!(ft_strchr((*cur)->w, '\n'))
-		&& (rd = read((*cur)->fd, buff, BUFF_SIZE)))
+	size = (pos - (*cur)->str);
+	if (!(*line = (char *)malloc(sizeof(char) * (size + 1))))
+		return (-1);
+	ft_strncpy(*line, (*cur)->str, size);
+	(*line)[size] = '\0';
+	(*cur)->rd -= (size + 1);
+	if ((*cur)->rd != 0)
 	{
-		buff[rd] = '\0';
-		(*cur)->save = ft_strdup((*cur)->w);
-//		free((*cur)->w);
-		if (rd == -1 || !((*cur)->w = ft_strjoin((*cur)->save, buff)))
+		if (!(buff = (char *)malloc(sizeof(char) * (*cur)->rd + 1)))
 			return (-1);
-		ft_strdel(&(*cur)->save);
+		ft_strncpy(buff, (*cur)->str + size + 1, (size_t)(*cur)->rd);
+		free((*cur)->str);
+		(*cur)->str = buff;
+		buff[(*cur)->rd] = '\0';
 	}
-	if (rd < BUFF_SIZE && !ft_strlen((*cur)->w))
+	else
 	{
-		ft_strdel(&(*cur)->w);
-		return (0);
+		free((*cur)->str);
+		(*cur)->str = NULL;
 	}
-	(rd = ft_writetil(line, (*cur)->w, '\n')) < (int)ft_strlen((*cur)->w) ?
-	(*cur)->str = ft_strcpy((*cur)->str, (*cur)->w + rd + 1) : ft_strclr((*cur)->str);
-	ft_strdel(&(*cur)->w);
 	return (1);
+}
+
+int		read_line(t_line **cur)
+{
+	ssize_t	rd;
+	char	*buff;
+
+	if (!(*cur)->str)
+		(*cur)->str = malloc(BUFF_SIZE);
+	if (!(buff = (char *)malloc(sizeof(char) * (BUFF_SIZE + (*cur)->rd + 1))))
+		return (-1);
+	if ((*cur)->rd > 0)
+		ft_strncpy(buff, (*cur)->str, (size_t)(*cur)->rd);
+	free((*cur)->str);
+	(*cur)->str = buff;
+	if ((rd = read((*cur)->fd, buff + (*cur)->rd, BUFF_SIZE)) < 0)
+		return (-1);
+	(*cur)->rd += rd;
+	buff[(*cur)->rd] = '\0';
+	if (rd > 0)
+		return (1);
+	return ((int)rd);
 }
 
 int		get_next_line(const int fd, char **line)
 {
 	static t_line	*files = NULL;
 	t_line			*cur;
+	char			*pos;
 	int				end;
 
-	if (fd >= 0 && line != NULL)
+	if (fd >= 0 && line != NULL && (cur = get_file(&files, fd)))
 	{
-		cur = get_file(&files, fd);
-		end = read_line(&cur, line);
-		if (end == -1)
+		*line = 0;
+		if ((pos = ft_memchr(cur->str, '\n', cur->rd)))
+			return (cut_line(line, &cur, pos));
+		while ((end = read_line(&cur) > 0))
+			if ((pos = ft_memchr(cur->str, '\n', cur->rd)))
+				return (cut_line(line, &cur, pos));
+		if (end < 0)
 			return (-1);
-		else if (end == 0)
-		{
-//			del_file(&files, cur);
+		else if (end == 0 && cur->rd == 0)
 			return (0);
-		}
+		*line = ft_strsub(cur->str, 0, cur->rd + 1);
+		cur->str = NULL;
+		cur->rd = 0;
 	}
 	else
 		return (-1);
 	return (1);
 }
-

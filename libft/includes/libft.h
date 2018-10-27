@@ -16,7 +16,8 @@
 # include <string.h>
 # include <stdlib.h>
 # include <unistd.h>
-// # include "includes/ft_printf.h"
+
+# define BUFF_SIZE 10
 
 typedef struct		s_list
 {
@@ -24,6 +25,14 @@ typedef struct		s_list
 	size_t			content_size;
 	struct s_list	*next;
 }					t_list;
+
+typedef struct		s_line
+{
+	int				fd;
+	size_t			rd;
+	char			*str;
+	struct s_line	*next;
+}					t_line;
 
 void				ft_bzero(void *s, size_t n);
 void				*ft_memset(void *s, int c, size_t n);
@@ -100,7 +109,7 @@ void				ft_sort(int *arr, size_t size, int assc);
 void				ft_gnome_sort(int *arr, size_t size);
 size_t				ft_count_mass_el(void **mass);
 void				ft_del_mas(void **mass);
-int					ft_writetil(char **dest, char *src, char sym);
+char				*ft_write_till(char *dest, char *src, size_t n);
 int					ft_count_digits(int n);
 void				ft_fill_new(char **s, int size, char c);
 int					get_next_line(const int fd, char **line);

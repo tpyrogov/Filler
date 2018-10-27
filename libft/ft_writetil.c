@@ -12,29 +12,15 @@
 
 #include "includes/libft.h"
 
-int		ft_writetil(char **dest, char *src, char sym)
+char	*ft_write_till(char *dest, char *src, size_t n)
 {
-	int i;
-	int pos;
+	size_t i;
 
 	i = 0;
-	pos = 0;
-	while (src[pos] != '\0')
+	while (i < n)
 	{
-		if (src[pos] == sym)
-			break ;
-		pos++;
+		dest[i] = src[i];
+		i++;
 	}
-	if (!(*dest = ft_strnew(pos)))
-		return (0);
-	if (pos != 0)
-	{
-		while (i < pos)
-		{
-			*((*dest) + i) = src[i];
-			i++;
-		}
-		*((*dest) + i) = '\0';
-	}
-	return (pos);
+	return (dest);
 }

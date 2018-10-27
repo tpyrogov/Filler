@@ -1,54 +1,40 @@
-#include <stdio.h>
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tpyrogov <tpyrogov@student.unit.ua>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2018/10/22 18:04:11 by tpyrogov          #+#    #+#             */
+/*   Updated: 2018/10/22 18:04:15 by tpyrogov         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "filler.h"
-
-int 	validate_coords(t_data *game, int i, int j)
-{
-	if (i >= 0 && i < game->m_h && j >= 0 && j < game->m_w)
-		return (1);
-	return (0);
-}
-
-int 	check_condiotions(t_data *game, int i, int j, int *first)
-{
-	if (game->piece[i][j] == '*' && game->map[game->temp_y + i][game->temp_x + j] == game->me)
-	{
-		if(*first == 1)
-			*first = 0;
-		else
-			return (-1);
-	}
-	else if (game->piece[i][j] == '*' && game->map[game->temp_y + i][game->temp_x + j] == game->enemy)
-		return (-1);
-//	if ((game->piece[i][j] == '.' && game->map[game->temp_y + i][game->temp_x + j] == game->me)
-//	|| (game->piece[i][j] == '*' && game->map[game->temp_y + i][game->temp_x + j] == game->me))
-//		return (0);
-	return (game->map[game->temp_y + i][game->temp_x + j]);
-}
 
 int		fit(t_data *game)
 {
-	int i;
-	int j;
-	int first;
-	int sum;
-	int temp;
+	t_coord	p;
+	int		first;
+	int		sum;
+	int		temp;
 
 	sum = 0;
 	first = 1;
-	i = 0;
-	while (i < game->p_h)
+	p.y = 0;
+	while (p.y < game->p_h)
 	{
-		j = 0;
-		while (j < game->p_w)
+		p.x = 0;
+		while (p.x < game->p_w)
 		{
-			temp = check_condiotions(game, i, j, &first);
+			temp = check_condiotions(game, p.y, p.x, &first);
 			if (temp != -1)
 				sum += temp;
 			else
 				return (-1);
-			j++;
+			p.x++;
 		}
-		i++;
+		p.y++;
 	}
 	if (first == 1)
 		return (-1);
@@ -61,7 +47,7 @@ void	fit_again(t_data *game, int i, int j)
 
 	if (validate_coords(game, i + game->p_h - 1, j + game->p_w - 1))
 	{
-		game->temp_x= j;
+		game->temp_x = j;
 		game->temp_y = i;
 		sum = fit(game);
 		if ((sum < game->sum || game->sum == 0) && sum > 0)
@@ -91,7 +77,7 @@ void	try_to_fit(t_data *game)
 	}
 }
 
-int 	solve(t_data *game)
+int		solve(t_data *game)
 {
 	try_to_fit(game);
 	if (game->ans_x == -1 || game->ans_y == -1)
@@ -103,38 +89,15 @@ int 	solve(t_data *game)
 	return (1);
 }
 
-int		main()
+int		main(void)
 {
-	t_data	game;
-	int		cont;
-//	FILE *fd;
-//	int i, j;
+	t_data game;
 
-//	fd = fopen("/Users/tpyrogov/CLionProjects/filler2/cmake-build-debug/file", "wr");
-	cont = 1;
 	start_init(&game);
-	while (cont != -1)
+	while (get_next_line(0, &game.read) > 0)
 	{
 		if (init(&game) == -1)
-			break;
-		else
-		{
-//			i = 0;
-//			fprintf(fd, "\n");
-//			while (i < game.m_h)
-//			{
-//				j = 0;
-//				while (j < game.m_w)
-//				{
-//					fprintf(fd, "%4d", game.map[i][j]);
-//					j++;
-//				}
-//				fprintf(fd, "\n");
-//				i++;
-//			}
-			cont = solve(&game);
-			if (cont != -1)
-			del_before_update(&game);
-		}
+			return (0);
+		free(game.read);
 	}
 }

@@ -1,6 +1,15 @@
-//
-// Created by Tania PYROGOVSKA on 10/18/18.
-//
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   map.c                                              :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tpyrogov <tpyrogov@student.unit.ua>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2018/10/22 18:05:00 by tpyrogov          #+#    #+#             */
+/*   Updated: 2018/10/22 18:05:02 by tpyrogov         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "filler.h"
 
 void	forward(t_data *game, int i, int *y, int *x)
@@ -10,13 +19,13 @@ void	forward(t_data *game, int i, int *y, int *x)
 	while (i < game->m_h)
 	{
 		j = 0;
-		while(j < game->m_w)
+		while (j < game->m_w)
 		{
 			if (game->map[i][j] == game->enemy)
 			{
 				*y = i;
 				*x = j;
-				return;
+				return ;
 			}
 			j++;
 		}
@@ -37,7 +46,7 @@ void	backward(t_data *game, int i, int *y, int *x)
 			{
 				*y = i;
 				*x = j;
-				return;
+				return ;
 			}
 			j--;
 		}
@@ -51,7 +60,6 @@ int		ft_abs(int a)
 		return (a * (-1));
 	return (a);
 }
-
 
 int		calc_distance(t_data *game, int i, int j)
 {
@@ -87,5 +95,4 @@ void	distance_map(t_data *game)
 		}
 		i++;
 	}
-
 }

@@ -110,6 +110,7 @@ $(NAME): $(OBJ)
 
 clean:
 	@rm -f $(OBJ)
+	@rm -f ./ft_printf/*.o
 
 fclean: clean
 	@rm -f $(NAME)

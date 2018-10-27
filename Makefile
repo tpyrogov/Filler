@@ -2,7 +2,8 @@ CFLAGS		=	-Wall -Wextra -Werror
 SRC			=	./free.c \
                 ./init.c \
                 ./main.c \
-                ./map.c
+                ./map.c \
+                ./helpers.c
 INCL		=	./filler.h
 INCL_LIB	=	./libft/includes/libft.h
 OBJ			=	$(SRC:.c=.o)
@@ -19,7 +20,8 @@ $(OBJ):%.o: %.c
 
 clean:
 	rm -f *.o
-	rm -f ./libft/*.o
+	make -C libft/ clean
+	# rm -f ./libft/*.o
 
 fclean: clean
 	rm -f $(NAME)
